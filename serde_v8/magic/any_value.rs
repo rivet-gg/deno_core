@@ -28,7 +28,7 @@ impl ToV8 for AnyValue {
   ) -> Result<v8::Local<'a, v8::Value>, crate::Error> {
     match self {
       Self::RustBuffer(buf) => crate::to_v8(scope, buf),
-      Self::V8Buffer(_) => unreachable!(),
+      Self::V8Buffer(buf) => crate::to_v8(scope, buf),
       Self::String(s) => crate::to_v8(scope, s),
       Self::Number(num) => crate::to_v8(scope, num),
       Self::BigInt(bigint) => {

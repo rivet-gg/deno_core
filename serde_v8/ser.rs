@@ -17,6 +17,7 @@ use crate::BigInt;
 use crate::ByteString;
 use crate::DetachedBuffer;
 use crate::ExternalPointer;
+use crate::JsBuffer;
 use crate::ToJsBuffer;
 use crate::U16String;
 
@@ -276,6 +277,7 @@ pub enum StructSerializers<'a, 'b, 'c> {
   ExternalPointer(MagicalSerializer<'a, 'b, 'c, magic::ExternalPointer>),
   Magic(MagicalSerializer<'a, 'b, 'c, magic::Value<'a>>),
   GlobalMagic(MagicalSerializer<'a, 'b, 'c, magic::GlobalValue>),
+  V8ToV8Buf(MagicalSerializer<'a, 'b, 'c, JsBuffer>),
   RustToV8Buf(MagicalSerializer<'a, 'b, 'c, ToJsBuffer>),
   MagicAnyValue(MagicalSerializer<'a, 'b, 'c, AnyValue>),
   MagicDetached(MagicalSerializer<'a, 'b, 'c, DetachedBuffer>),
@@ -298,6 +300,7 @@ impl<'a, 'b, 'c> ser::SerializeStruct for StructSerializers<'a, 'b, 'c> {
       StructSerializers::ExternalPointer(s) => s.serialize_field(key, value),
       StructSerializers::Magic(s) => s.serialize_field(key, value),
       StructSerializers::GlobalMagic(s) => s.serialize_field(key, value),
+      StructSerializers::V8ToV8Buf(s) => s.serialize_field(key, value),
       StructSerializers::RustToV8Buf(s) => s.serialize_field(key, value),
       StructSerializers::MagicAnyValue(s) => s.serialize_field(key, value),
       StructSerializers::MagicDetached(s) => s.serialize_field(key, value),
@@ -313,6 +316,7 @@ impl<'a, 'b, 'c> ser::SerializeStruct for StructSerializers<'a, 'b, 'c> {
       StructSerializers::ExternalPointer(s) => s.end(),
       StructSerializers::Magic(s) => s.end(),
       StructSerializers::GlobalMagic(s) => s.end(),
+      StructSerializers::V8ToV8Buf(s) => s.end(),
       StructSerializers::RustToV8Buf(s) => s.end(),
       StructSerializers::MagicAnyValue(s) => s.end(),
       StructSerializers::MagicDetached(s) => s.end(),
@@ -586,6 +590,10 @@ impl<'a, 'b, 'c> ser::Serializer for Serializer<'a, 'b, 'c> {
       U16String::MAGIC_NAME => {
         let m = MagicalSerializer::<U16String>::new(self.scope);
         Ok(StructSerializers::MagicU16String(m))
+      }
+      JsBuffer::MAGIC_NAME => {
+        let m = MagicalSerializer::<JsBuffer>::new(self.scope);
+        Ok(StructSerializers::V8ToV8Buf(m))
       }
       ToJsBuffer::MAGIC_NAME => {
         let m = MagicalSerializer::<ToJsBuffer>::new(self.scope);
