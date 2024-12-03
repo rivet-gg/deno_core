@@ -246,7 +246,7 @@ impl ModuleMap {
 
   /// Get module id, following all aliases in case of module specifier
   /// that had been redirected.
-  pub(crate) fn get_id(
+  pub fn get_id(
     &self,
     name: &str,
     requested_module_type: impl AsRef<RequestedModuleType>,
@@ -280,7 +280,7 @@ impl ModuleMap {
     self.data.borrow().get_type_by_module(global)
   }
 
-  pub fn get_handle(
+  pub(crate) fn get_handle(
     &self,
     id: ModuleId,
   ) -> Option<v8::Global<v8::Module>> {
@@ -1710,7 +1710,7 @@ impl ModuleMap {
     }
   }
 
-  pub(crate) fn get_module<'s>(
+  pub fn get_module<'s>(
     &self,
     scope: &mut v8::HandleScope<'s>,
     module_id: ModuleId,

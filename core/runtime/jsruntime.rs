@@ -2364,6 +2364,16 @@ impl JsRuntime {
     self.inner.main_realm.0.module_map.mod_evaluate(scope, id)
   }
 
+  pub fn mod_evaluate_sync(
+    &mut self,
+    id: ModuleId,
+  ) -> Result<(), Error> {
+    let isolate = &mut self.inner.v8_isolate;
+    let realm = &self.inner.main_realm;
+    let scope = &mut realm.handle_scope(isolate);
+    self.inner.main_realm.0.module_map.mod_evaluate_sync(scope, id)
+  }
+
   #[inline(always)]
   pub fn module_map(&self) -> Rc<ModuleMap> {
     self.inner.main_realm.0.module_map()

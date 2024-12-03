@@ -6,7 +6,7 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Range;
 
-use super::transl8::FromV8;
+use super::transl8::{ToV8, FromV8};
 
 /// A type that may be represented as a [`V8Slice`].
 pub trait V8Sliceable: Copy + Clone {
@@ -331,6 +331,23 @@ where
       }
       Err(_) => Err(crate::Error::ExpectedBuffer(value.type_repr())),
     }
+  }
+}
+
+impl<A, T> ToV8 for V8Slice<T>
+where
+T: V8Sliceable<V8 = A>,
+for<'a> v8::Local<'a, v8::Value>: From<v8::Local<'a, <T as V8Sliceable>::V8>>,
+{
+  fn to_v8<'a>(
+    &self,
+    scope: &mut v8::HandleScope<'a>,
+  ) -> Result<v8::Local<'a, v8::Value>, crate::Error> {
+    self
+      .clone()
+      .into_v8_local(scope)
+      .map(Into::into)
+      .ok_or_else(|| crate::Error::Message("failed to allocate array".into()))
   }
 }
 

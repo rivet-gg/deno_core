@@ -71,6 +71,15 @@ impl FromV8 for JsBuffer {
   }
 }
 
+impl ToV8 for JsBuffer {
+  fn to_v8<'a>(
+    &self,
+    scope: &mut v8::HandleScope<'a>,
+  ) -> Result<v8::Local<'a, v8::Value>, crate::Error> {
+    self.0.to_v8(scope)
+  }
+}
+
 impl From<V8Slice<u8>> for JsBuffer {
   fn from(value: V8Slice<u8>) -> Self {
     JsBuffer(value)
