@@ -123,7 +123,7 @@ struct DynImportState {
 }
 
 /// A collection of JS modules.
-pub(crate) struct ModuleMap {
+pub struct ModuleMap {
   // Handling of futures for loading module sources
   // TODO(mmastrac): we should not be swapping this loader out
   pub(crate) loader: RefCell<Rc<dyn ModuleLoader>>,
@@ -280,7 +280,7 @@ impl ModuleMap {
     self.data.borrow().get_type_by_module(global)
   }
 
-  pub(crate) fn get_handle(
+  pub fn get_handle(
     &self,
     id: ModuleId,
   ) -> Option<v8::Global<v8::Module>> {
@@ -493,7 +493,7 @@ impl ModuleMap {
   /// Creates a "synthetic module", that contains only a single, "default" export.
   ///
   /// The module gets instantiated and its ID is returned.
-  pub fn new_synthetic_module(
+  pub(crate) fn new_synthetic_module(
     &self,
     scope: &mut v8::HandleScope,
     name: impl IntoModuleName,
@@ -1244,7 +1244,7 @@ impl ModuleMap {
   /// evaluated without the need to poll the event loop.
   ///
   /// This is useful for evaluating internal modules that can't use Top-Level Await.
-  pub(crate) fn mod_evaluate_sync(
+  pub fn mod_evaluate_sync(
     self: &Rc<Self>,
     scope: &mut v8::HandleScope,
     id: ModuleId,

@@ -2364,6 +2364,11 @@ impl JsRuntime {
     self.inner.main_realm.0.module_map.mod_evaluate(scope, id)
   }
 
+  #[inline(always)]
+  pub fn module_map(&self) -> Rc<ModuleMap> {
+    self.inner.main_realm.0.module_map()
+  }
+
   /// Asynchronously load specified module and all of its dependencies.
   ///
   /// The module will be marked as "main", and because of that
